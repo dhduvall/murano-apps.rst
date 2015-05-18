@@ -1,0 +1,179 @@
+# Copyright 2015 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+Namespaces:
+  =: com.oracle.db.muranoPdb
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  ext: io.murano.extensions
+  apps: io.murano.apps
+Name: OraclePDB
+Extends: 'io.murano.databases.SqlDatabase'
+Properties:
+  name:
+      Contract: $.string().notNull()
+  host:
+      Contract: $.string()
+      Usage: Out
+  username:
+      Contract: $.string()
+      Usage: InOut
+  database:
+      Contract: $.string()
+      Usage: InOut
+  password:
+      Contract: $.string()
+      Usage: InOut
+  agent_queue:
+      Contract: $.string().notNull()
+      Default: 'static-agent-002-tasks'
+      Usage: In
+  agent:
+      Contract: $.class(ext:StaticAgent)
+      Usage: InOut
+  listener:
+      Contract: $.string()
+      Default: '1.1.1.1'
+      Usage: InOut
+  pdbport:
+      Contract: $.string()
+      Default: '1521'
+      Usage: InOut
+  createDB:
+      Contract: $.bool()
+      Default: false
+      Usage: InOut
+
+
+Methods:
+  initialize:
+    Body:
+      - $.environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $.environment.reporter.report($this, 'Oracle PDB')
+          - $.checkAvailability()
+          - $.getListener()
+          - $.environment.reporter.report($this, 'Listener {0}'.format($.listener))
+          - If: $.createDB
+            Then:
+              - $.createDatabase(database => $.database)
+              - $.createUser(username => $.username, password => $.password, database => $.database)
+              - $connection_string: $.getConnectionString(username => $.username, password => $.password) 
+              - $.environment.reporter.report($this, 'Connection String {0}'.format($connection_string))
+          - $.setAttr(deployed, true)
+
+  createDatabase:
+    Arguments:
+        database:
+          Contract: $.string().notNull()
+    Body:
+        - $.environment.reporter.report($this, 'Creating a DB')
+        - $resources: new(sys:Resources)
+        - $command: $resources.yaml('CreatePDB.template').bind(dict(
+              database => $database
+             ))
+        - $queue: $.environment.agentListener.queueName()
+        - $.agent: new(ext:StaticAgent, env => $.environment,
+              input_queue => $.agent_queue,
+              response_queue => $queue )
+        - $.agent.prepare()
+        - $.agent.call($command, $resources)
+
+  getListener:
+    Body:
+      - $resources: new(sys:Resources)
+      - $command: $resources.yaml('GetListener.template')
+      - $queue: $.environment.agentListener.queueName()
+      - $.agent: new(ext:StaticAgent, env => $.environment,
+              input_queue => $.agent_queue,
+              response_queue => $queue )
+      - $.agent.prepare()
+      - $.listener: $.agent.call($command, $resources)
+
+  createUser:
+    Arguments:
+        username:
+          Contract: $.string().notNull()
+        password:
+          Contract: $.string().notNull()
+        database:
+          Contract: $.string().notNull()
+    Body:
+        - $.user: $username
+        - $.password: $password
+        - $resources: new(sys:Resources)
+        - $command: $resources.yaml('CreateUser.template').bind(dict(
+              database => $database,
+              username => $username,
+              password => $password
+             ))
+        - $queue: $.environment.agentListener.queueName()
+        - $.agent: new(ext:StaticAgent, env => $.environment,
+              input_queue => $.agent_queue,
+              response_queue => $queue )
+        - $.agent.prepare()
+        - $.agent.call($command, $resources)
+
+  assignUser:
+    Arguments:
+        username:
+            Contract: $.string().notNull()
+        database:
+            Contract: $.string().notNull()
+    Body:
+        - $.environment.reporter.report($this, 'Assigning a user to the DB')
+        - $resources: new(sys:Resources)
+        - $command: $resources.yaml('AssignUser.template').bind(dict(
+             time => 'now'
+             ))
+        - $queue: $.environment.agentListener.queueName()
+        - $.agent: new(ext:StaticAgent, env => $.environment,
+              input_queue => $.agent_queue,
+              response_queue => $queue )
+        - $.agent.prepare()
+        - $.agent.call($command, $resources)
+
+  getConnectionString:
+    Arguments:
+        username:
+          Contract: $.string().notNull()
+        password:
+          Contract: $.string().notNull()
+    Body:
+        - $.environment.reporter.report($this, 'Generating a connection string for the PDB')
+        - Return: format('{0}/{1}@//{2}/{3}',$.username, $.password, $.listener, $.database)
+
+  checkAvailability:
+      Body:
+          - $resources: new(sys:Resources)
+          - $command: $resources.yaml('CheckStatus.template')
+          - $queue: $.environment.agentListener.queueName()
+          - $.agent: new(ext:StaticAgent, env => $.environment,
+              input_queue => $.agent_queue,
+              response_queue => $queue )
+          - $.agent.prepare()
+          - $.agent.call($command, $resources)
+
+  demo:
+    Usage: Action
+    Body:
+      - $.createDatabase(database => 'demo')
+      - $.createUser(database => 'demo',
+          username => 'test',
+          password => 'DemoTest01')
