@@ -1,6 +1,4 @@
 # Oracle PDB Connector
-Package name:  com.oracle.db.muranoPdb.OraclePDB
-
 
 ## Description
 
@@ -54,17 +52,16 @@ releases.
     # ./setup install
     ```
 
-  - For murano-agent, a binary "muranoagent" will be copied into /usr/bin
-    directory
+  - The executable `muranoagent` will be made available in `/usr/bin`.
 
-  - Setup the murano-agent by copying and editing the sample conf file as
+  - Setup the agent by copying and editing the sample configuration file as
     `/etc/murano/agent.conf`.
 
   - Edit `/etc/murano/agent.conf` and set `enable_dynamic_result_queue` to
     `True` in the `DEFAULT` section.  Set `input_queue` with queue
     information from the muranoclient
 
-  - Start the murano-agent:
+  - Start the agent:
     ```
     # /usr/bin/muranoagent --config-file /etc/murano.conf 
     ```
