@@ -54,14 +54,23 @@ releases.
 
   - The executable `muranoagent` will be made available in `/usr/bin`.
 
-  - Setup the agent by copying and editing the sample configuration file as
+  - Set up the agent by copying the sample configuration file to
     `/etc/murano/agent.conf`.
 
   - Edit `/etc/murano/agent.conf` and set `enable_dynamic_result_queue` to
     `True` in the `DEFAULT` section.  Set `input_queue` with queue
-    information from muranoclient.
+    information from the murano engine.
 
   - Start the agent:
     ```
     # /usr/bin/muranoagent --config-file /etc/murano.conf 
     ```
+
+3. Install the latest version of the plugin required by this application,
+   available from PyPI:
+
+   ```
+   # pip install murano.plugins.static-agent
+   ```
+
+   After the plugin is installed, restart the murano engine.
