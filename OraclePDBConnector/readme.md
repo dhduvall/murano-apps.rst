@@ -48,8 +48,8 @@ releases.
     ```
     # tar -zxvf <package>.tar.gz
     # cd <package>
-    # ./setup build
-    # ./setup install
+    # ./setup.py build
+    # ./setup.py install
     ```
 
   - The executable `muranoagent` will be made available in `/usr/bin`.
@@ -59,7 +59,7 @@ releases.
 
   - Edit `/etc/murano/agent.conf` and set `enable_dynamic_result_queue` to
     `True` in the `DEFAULT` section.  Set `input_queue` with queue
-    information from the muranoclient
+    information from muranoclient.
 
   - Start the agent:
     ```
