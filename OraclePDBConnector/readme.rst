@@ -31,13 +31,14 @@ Instructions
    ORADATA=/path/to/data          # Oracle application directory e.g. /u01/app/oracle/oradata
    ORACLE_USER_HOME=/home/oracle  # Home directory of user oracle
 
-Blah
+..
 
    Now create a file ``/etc/oraenv/orapwd``, also with read/write permissions
    for the ``oracle`` user, and add the names and passwords for the admin and
    system users:
 
 .. sourcecode:: shell
+
    ADMIN_USER=
    SYSTEM_USER=
    ADMIN_PWD=
