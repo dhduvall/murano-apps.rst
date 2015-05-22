@@ -24,6 +24,7 @@ Instructions
    values appropriate for your installation):
 
 .. sourcecode:: bash
+
    ORACLE_BASE=/path/to/oracle    # The base directory of Oracle database installation
    ORACLE_HOME=$ORACLE_BASE/<oracle12c directory>
    ORACLE_SID=<sid>               # Oracle System Identifier
