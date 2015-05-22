@@ -74,7 +74,7 @@ Methods:
             Then:
               - $.createDatabase(database => $.database)
               - $.createUser(username => $.username, password => $.password, database => $.database)
-              - $connection_string: $.getConnectionString(username => $.username, password => $.password) 
+              - $connection_string: $.getConnectionString(username => $.username, password => $.password)
               - $.environment.reporter.report($this, 'Connection String {0}'.format($connection_string))
           - $.setAttr(deployed, true)
 

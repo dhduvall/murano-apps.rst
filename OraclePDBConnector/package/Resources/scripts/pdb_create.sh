@@ -31,7 +31,7 @@ ALTER PLUGGABLE DATABASE $1 OPEN;
 EXIT;
 EOF
 chown oracle:oracle $sql_file
-# Execute the sql statements 
+# Execute the sql statements
 su - oracle -c ". ~/ora_env.sh && sqlplus /nolog @$sql_file $1"
 # remove the sql_file
 rm -f $sql_file

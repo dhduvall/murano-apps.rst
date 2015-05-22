@@ -29,8 +29,8 @@ then
 fi
 
 # create user
-# grant all privileges 
-# TODO: privileges to be set based on what the ADMIN user is requesting 
+# grant all privileges
+# TODO: privileges to be set based on what the ADMIN user is requesting
 # from the client.
 
 cat > $sql_file << EOF
@@ -43,11 +43,11 @@ EXIT
 EOF
 
 chown oracle:oracle $sql_file
-# Run this perl script so that the user information is 
+# Run this perl script so that the user information is
 # updated properly on all the system meta files.
 perl $ORACLE_HOME/rdbms/admin/catcon.pl -n 1 -l $ORACLE_USER_HOME -b pupbld -u $SYSTEM_USER/$SYSTEM_USER_PWD $ORACLE_HOME/sqlplus/admin/pupbld.sql;
 
-# Execute the sql 
+# Execute the sql
 su - oracle -c " . ~/ora_env.sh && sqlplus /nolog @$sql_file"
 
 # construct the connection string.
