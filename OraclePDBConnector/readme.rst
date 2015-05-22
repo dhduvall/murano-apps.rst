@@ -30,7 +30,6 @@ Instructions
    ORACLE_SID=<sid>               # Oracle System Identifier
    ORADATA=/path/to/data          # Oracle application directory e.g. /u01/app/oracle/oradata
    ORACLE_USER_HOME=/home/oracle  # Home directory of user oracle
-
 ..
 
    Now create a file ``/etc/oraenv/orapwd``, also with read/write permissions
@@ -53,6 +52,7 @@ Instructions
 
   - Install each of the package by doing the following,
 .. sourcecode:: console
+
     # tar -zxvf <package>.tar.gz
     # cd <package>
     # ./setup.py build
@@ -70,6 +70,7 @@ Instructions
 
   - Start the agent:
 .. sourcecode:: console
+
     # /usr/bin/muranoagent --config-file /etc/murano.conf
 ..
 
@@ -77,6 +78,7 @@ Instructions
    available from PyPI:
 
 .. sourcecode:: console
+
    # pip install murano.plugins.static-agent
 ..
 
